@@ -12,6 +12,10 @@ addons:
 services:
   - postgresql
 
+env:
+  global:
+    - PGPORT=5433
+
 cache:
   directories:
     - $HOME/.cache/pip/
