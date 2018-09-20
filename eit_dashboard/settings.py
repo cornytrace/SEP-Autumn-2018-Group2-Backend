@@ -121,13 +121,8 @@ USE_TZ = True
 
 # Change 'default' database configuration with $DATABASE_URL.
 DATABASES["default"].update(dj_database_url.config())
-del DATABASES["default"]["HOST"]
-del DATABASES["default"]["PASSWORD"]
 # Change 'coursera' database configuration with $COURSERA_DATABASE_URL.
 DATABASES["coursera"].update(dj_database_url.config("COURSERA_DATABASE_URL"))
-del DATABASES["coursera"]["HOST"]
-del DATABASES["coursera"]["PASSWORD"]
-
 
 # Allow all host headers
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "dashit.win.tue.nl"]
