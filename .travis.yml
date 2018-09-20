@@ -20,14 +20,13 @@ cache:
   directories:
     - $HOME/.cache/pip/
     - $HOME/.cache/pipenv/
-    - $HOME/.cache/db/
 
 install:
   - pip install pipenv
   - pipenv sync --dev
 
 before_script:
-  - git clone git@github.com:cornytrace/SEP-Autumn-2018-Group2-Backend.git --branch coursera_db --single-branch $HOME/.cache/db/
-  - pg_restore -U postgres -O -C -f /dev/null $HOME/.cache/db/coursera
+  - git clone git@github.com:cornytrace/SEP-Autumn-2018-Group2-Backend.git --branch coursera_db --single-branch $HOME/db/
+  - pg_restore -U postgres -O -C -f /dev/null $HOME/db/coursera
 script:
   - pytest --cov
