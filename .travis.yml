@@ -31,6 +31,7 @@ install:
 
 before_script:
   - git clone git@github.com:cornytrace/SEP-Autumn-2018-Group2-Backend.git --branch coursera_db --single-branch $HOME/db/
-  - pg_restore -U postgres -d test_coursera -O -C -f /dev/null $HOME/db/coursera
+  - psql -U postgres -c 'create database test_coursera;'
+  - psql -U postgres -d test_coursera -f $HOME/db/coursera.sql
 script:
   - pytest --cov
