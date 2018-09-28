@@ -41,6 +41,11 @@ def coursera_course_id():
 
 
 @pytest.fixture
+def coursera_video_id():
+    return "F7oJh"
+
+
+@pytest.fixture
 def teacher(_teacher, coursera_course):
     _teacher.courses.get_or_create(
         course_id=coursera_course.pk,
