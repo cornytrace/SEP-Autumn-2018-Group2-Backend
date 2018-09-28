@@ -1,5 +1,5 @@
 from django.contrib.postgres.fields import JSONField
-from django.db.models import ExpressionWrapper, F
+from django.db.models.functions import Cast
 from django.shortcuts import get_object_or_404
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
@@ -34,8 +34,6 @@ class VideoAnalyticsViewSet(ReadOnlyModelViewSet):
         return (
             super()
             .get_queryset()
-            .annotate(
-                value_json=ExpressionWrapper(F("value"), output_field=JSONField())
-            )
+            .annotate(value_json=Cast("value", output_field=JSONField()))
             .filter(course_id=self.kwargs["course_id"])
         )
