@@ -3,7 +3,7 @@ from django.db.models.functions import Cast
 from django.shortcuts import get_object_or_404
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
-from coursera.models import ClickstreamEvent, Course
+from coursera.models import ClickstreamEvent, Course, Item
 from coursera.serializers import CourseAnalyticsSerializer, VideoAnalyticsSerializer
 
 
@@ -24,7 +24,7 @@ class CourseAnalyticsViewSet(ReadOnlyModelViewSet):
 
 
 class VideoAnalyticsViewSet(ReadOnlyModelViewSet):
-    queryset = ClickstreamEvent.objects.all()
+    queryset = Item.objects.all()
     serializer_class = VideoAnalyticsSerializer
 
     lookup_field = "value_json__item_id"
