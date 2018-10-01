@@ -14,9 +14,9 @@ class Migration(migrations.Migration):
                 CREATE MATERIALIZED VIEW feedback_course_ratings_view
                 AS
                 SELECT
-                MD5(MD5(MD5(MD5(course_id) || eitdigital_user_id) || feedback_system) || feedback_ts) as id,
+                MD5(MD5(MD5(MD5(course_id) || eitdigital_feedback_user_id) || feedback_system) || feedback_ts) as id,
                 course_id,
-                eitdigital_user_id,
+                eitdigital_feedback_user_id,
                 feedback_system,
                 feedback_rating,
                 feedback_max_rating,
@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
                 CREATE INDEX ON feedback_course_ratings_view (course_id)
                 """,
                 """
-                CREATE INDEX ON feedback_course_ratings_view (eitdigital_user_id)
+                CREATE INDEX ON feedback_course_ratings_view (eitdigital_feedback_user_id)
                 """,
             ],
             reverse_sql="""

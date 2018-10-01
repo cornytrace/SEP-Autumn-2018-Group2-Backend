@@ -28,7 +28,7 @@ class CourseRating(models.Model):
         "EITDigitalUser",
         related_name="course_ratings",
         on_delete=models.DO_NOTHING,
-        db_column="eitdigital_user_id",
+        db_column="eitdigital_feedback_user_id",
         max_length=50,
         blank=True,
         null=True,
