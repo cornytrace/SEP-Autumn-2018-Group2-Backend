@@ -6,22 +6,7 @@ from django.db.models.functions import Cast, Coalesce, TruncMonth
 from django.utils.timezone import now
 from rest_framework import serializers
 
-from coursera.models import (
-    Branch,
-    ClickstreamEvent,
-    Course,
-    CourseMembership,
-    CourseProgress,
-    CourseRating,
-    DiscussionQuestion,
-    EITDigitalUser,
-    Grade,
-    Item,
-    ItemType,
-    LastActivityPerModule,
-    Lesson,
-    Module,
-)
+from coursera.models import *
 
 
 class VideoAnalyticsSerializer(serializers.ModelSerializer):
@@ -39,11 +24,15 @@ class VideoAnalyticsSerializer(serializers.ModelSerializer):
             "watched_video",
             "finished_video",
             "video_comments",
+            "video_likes",
+            "video_dislikes",
         ]
 
     watched_video = serializers.SerializerMethodField()
     finished_video = serializers.SerializerMethodField()
     video_comments = serializers.SerializerMethodField()
+    video_likes = serializers.SerializerMethodField()
+    video_dislikes = serializers.SerializerMethodField()
 
     def get_watched_video(self, obj):
         try:
@@ -58,7 +47,7 @@ class VideoAnalyticsSerializer(serializers.ModelSerializer):
                     value_json__item_id=obj.item_id,
                     key="start",
                 )
-                .aggregate(watchers_for_video=Coalesce(Count("pk"), -1))[
+                .aggregate(watchers_for_video=Coalesce(Count("pk"), 0))[
                     "watchers_for_video"
                 ]
             )
@@ -74,7 +63,7 @@ class VideoAnalyticsSerializer(serializers.ModelSerializer):
                 .filter(
                     course_id=obj.branch_id, value_json__item_id=obj.item_id, key="end"
                 )
-                .aggregate(watchers_for_video=Coalesce(Count("pk"), -1))[
+                .aggregate(watchers_for_video=Coalesce(Count("pk"), 0))[
                     "watchers_for_video"
                 ]
             )
@@ -85,7 +74,41 @@ class VideoAnalyticsSerializer(serializers.ModelSerializer):
         except AttributeError:
             return DiscussionQuestion.objects.filter(
                 course_id=obj.branch_id, course_item_id=obj.item_id
-            ).aggregate(video_comments=Coalesce(Count("pk"), -1))["video_comments"]
+            ).aggregate(video_comments=Coalesce(Count("pk"), 0))["video_comments"]
+
+    def get_video_likes(self, obj):
+        try:
+            return obj.video_likes
+        except AttributeError:
+            return ItemRating.objects.filter(
+                id=obj.branch_id,
+                course_item_id=obj.item_id,
+                feedback_system="LIKE_OR_DISLIKE",
+                feedback_rating=1,
+            ).aggregate(
+                video_likes=Coalesce(
+                    Count("eitdigital_feedback_user_id", distinct=True), 0
+                )
+            )[
+                "video_likes"
+            ]
+
+    def get_video_dislikes(self, obj):
+        try:
+            return obj.video_dislikes
+        except AttributeError:
+            return ItemRating.objects.filter(
+                id=obj.branch_id,
+                course_item_id=obj.item_id,
+                feedback_system="LIKE_OR_DISLIKE",
+                feedback_rating=0,
+            ).aggregate(
+                video_likes=Coalesce(
+                    Count("eitdigital_feedback_user_id", distinct=True), 0
+                )
+            )[
+                "video_likes"
+            ]
 
 
 class CourseAnalyticsSerializer(serializers.ModelSerializer):
