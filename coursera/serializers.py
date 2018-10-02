@@ -13,6 +13,7 @@ from coursera.models import (
     CourseMembership,
     CourseProgress,
     CourseRating,
+    DiscussionQuestion,
     EITDigitalUser,
     Grade,
     Item,
@@ -35,19 +36,18 @@ class VideoAnalyticsSerializer(serializers.ModelSerializer):
             "type",
             "name",
             "optional",
-            "atom_id",
-            "atom_version_id",
-            "atom_is_frozen",
             "watched_video",
             "finished_video",
+            "video_comments",
         ]
 
     watched_video = serializers.SerializerMethodField()
     finished_video = serializers.SerializerMethodField()
+    video_comments = serializers.SerializerMethodField()
 
     def get_watched_video(self, obj):
         try:
-            return obj.watchers_for_video
+            return obj.watched_video
         except AttributeError:
             return (
                 ClickstreamEvent.objects.annotate(
@@ -65,7 +65,7 @@ class VideoAnalyticsSerializer(serializers.ModelSerializer):
 
     def get_finished_video(self, obj):
         try:
-            return obj.watchers_for_video
+            return obj.finished_video
         except AttributeError:
             return (
                 ClickstreamEvent.objects.annotate(
@@ -78,6 +78,14 @@ class VideoAnalyticsSerializer(serializers.ModelSerializer):
                     "watchers_for_video"
                 ]
             )
+
+    def get_video_comments(self, obj):
+        try:
+            return obj.video_comments
+        except AttributeError:
+            return DiscussionQuestion.objects.filter(
+                course_id=obj.branch_id, course_item_id=obj.item_id
+            ).aggregate(video_comments=Coalesce(Count("pk"), -1))["video_comments"]
 
 
 class CourseAnalyticsSerializer(serializers.ModelSerializer):
