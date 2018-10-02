@@ -1,7 +1,10 @@
 import os
+from datetime import timedelta
 
 import pytest
 from django.conf import settings
+from django.utils import timezone
+from oauth2_provider.models import Application
 from pytest_factoryboy import register
 from rest_framework.test import APIClient
 
@@ -41,6 +44,25 @@ def coursera_course_id():
 
 
 @pytest.fixture
+def coursera_application():
+    return Application.objects.get(name="Coursera API")
+
+
+@pytest.fixture
+def introspection_access_token(coursera_application):
+    return coursera_application.accesstoken_set.filter(
+        scope__contains="introspection"
+    ).first()
+
+
+@pytest.fixture
+def introspection_client(introspection_access_token):
+    client = APIClient()
+    client.credentials(HTTP_AUTHORIZATION=f"Bearer {introspection_access_token.token}")
+    return client
+
+
+@pytest.fixture
 def teacher(_teacher, coursera_course):
     _teacher.courses.get_or_create(
         course_id=coursera_course.pk,
@@ -76,6 +98,16 @@ def admin_access_token(admin):
 @pytest.fixture
 def teacher_access_token(teacher):
     return AccessTokenFactory(user=teacher)
+
+
+@pytest.fixture
+def application_access_token(teacher, coursera_application):
+    return AccessTokenFactory(user=teacher, application=coursera_application)
+
+
+@pytest.fixture
+def invalid_token(teacher):
+    return AccessTokenFactory(user=teacher, expires=timezone.now() - timedelta(days=7))
 
 
 @pytest.fixture

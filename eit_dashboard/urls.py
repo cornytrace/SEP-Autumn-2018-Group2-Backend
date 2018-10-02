@@ -25,8 +25,8 @@ import users.urls
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("o/", include(users.urls)),
     path("o/", include((oauth2_provider.urls.base_urlpatterns, "oauth2_provider"))),
-    path("accounts/", include(users.urls)),
     path("api/", include(coursera.routers)),
     path("api/", include(users.routers)),
     path("api/", include(courses.routers)),

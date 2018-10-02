@@ -1,8 +1,13 @@
+import calendar
+import json
+
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
-from django.http import JsonResponse
-from oauth2_provider.views import ProtectedResourceView
+from django.http import HttpResponse, JsonResponse
+from oauth2_provider.models import get_access_token_model
+from oauth2_provider.views import ProtectedResourceView, introspect
 from rest_framework import decorators, status
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
@@ -83,3 +88,42 @@ class UserViewSet(ModelViewSet):
 class TestView(ProtectedResourceView):
     def get(self, request, **kwargs):
         return JsonResponse({"success": "You have a valid access token"})
+
+
+class IntrospectTokenView(introspect.IntrospectTokenView):
+    @staticmethod
+    def get_token_response(token_value=None):
+        try:
+            token = get_access_token_model().objects.get(token=token_value)
+        except ObjectDoesNotExist:
+            return HttpResponse(
+                content=json.dumps({"active": False}),
+                status=401,
+                content_type="application/json",
+            )
+        else:
+            if token.is_valid():
+                data = {
+                    "active": True,
+                    "scope": token.scope,
+                    "exp": int(calendar.timegm(token.expires.timetuple())),
+                }
+                if token.application:
+                    data["client_id"] = token.application.client_id
+                if token.user:
+                    data["username"] = token.user.get_username()
+                    data["role"] = token.user.role
+                    data["courses"] = list(
+                        token.user.courses.values_list("course_id", flat=True)
+                    )
+                return HttpResponse(
+                    content=json.dumps(data),
+                    status=200,
+                    content_type="application/json",
+                )
+            else:
+                return HttpResponse(
+                    content=json.dumps({"active": False}),
+                    status=200,
+                    content_type="application/json",
+                )

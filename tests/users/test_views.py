@@ -293,3 +293,50 @@ def test_authorize(api_client, user):
     api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {data['access_token']}")
     test_response = api_client.get(reverse("users-api:test-view"))
     assert test_response.status_code == 200, response.content
+
+
+@pytest.mark.django_db
+def test_introspection_endpoint(introspection_client, teacher_access_token):
+    response = introspection_client.post(
+        reverse("users:introspect"),
+        {"token": teacher_access_token.token, "platform": "coursera"},
+    )
+    assert response.status_code == 200, str(response.content)
+    data = json.loads(response.content)
+    assert data["active"], "access token is not active"
+    assert data["role"] == "teacher", "not a teacher"
+    assert data["courses"] == ["27_khHs4EeaXRRKK7mMjqw"]
+
+
+@pytest.mark.django_db
+def test_introspection_non_existent_token(introspection_client):
+    response = introspection_client.post(
+        reverse("users:introspect"),
+        {"token": "non-existent-token", "platform": "coursera"},
+    )
+    assert response.status_code == 401, str(response.content)
+
+
+@pytest.mark.django_db
+def test_introspection_invalid_token(introspection_client, invalid_token):
+    response = introspection_client.post(
+        reverse("users:introspect"),
+        {"token": invalid_token.token, "platform": "coursera"},
+    )
+    assert response.status_code == 200, str(response.content)
+    data = json.loads(response.content)
+    assert not data["active"], "invalid token is active"
+
+
+@pytest.mark.django_db
+def test_introspect_application_token(
+    introspection_client, introspection_access_token, coursera_application
+):
+    response = introspection_client.post(
+        reverse("users:introspect"),
+        {"token": introspection_access_token.token, "platform": "coursera"},
+    )
+    assert response.status_code == 200, str(response.content)
+    data = json.loads(response.content)
+    assert data["active"], "access token is not active"
+    assert data["client_id"] == coursera_application.client_id, "wrong client id"
