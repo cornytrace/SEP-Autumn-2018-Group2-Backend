@@ -9,9 +9,23 @@ from rest_framework import serializers
 from coursera.models import *
 
 
-class VideoAnalyticsSerializer(serializers.ModelSerializer):
+class VideoAnalyticsListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
+        fields = [
+            "id",
+            "branch",
+            "item_id",
+            "lesson",
+            "order",
+            "type",
+            "name",
+            "optional",
+        ]
+
+
+class VideoAnalyticsSerializer(VideoAnalyticsListSerializer):
+    class Meta(VideoAnalyticsListSerializer.Meta):
         fields = [
             "id",
             "branch",
@@ -26,7 +40,7 @@ class VideoAnalyticsSerializer(serializers.ModelSerializer):
             "video_comments",
             "video_likes",
             "video_dislikes",
-            "next_item_id",
+            "next_item",
         ]
 
     watched_video = serializers.SerializerMethodField()
@@ -34,7 +48,7 @@ class VideoAnalyticsSerializer(serializers.ModelSerializer):
     video_comments = serializers.SerializerMethodField()
     video_likes = serializers.SerializerMethodField()
     video_dislikes = serializers.SerializerMethodField()
-    next_item_id = serializers.SerializerMethodField()
+    next_item = serializers.SerializerMethodField()
 
     def get_watched_video(self, obj):
         try:
@@ -112,16 +126,17 @@ class VideoAnalyticsSerializer(serializers.ModelSerializer):
                 "video_likes"
             ]
 
-    def get_next_item_id(self, obj):
+    def get_next_item(self, obj):
         try:
             return obj.next_item_id
         except AttributeError:
             try:
-                return Item.objects.get(
+                item = Item.objects.get(
                     branch=obj.branch, lesson=obj.lesson, order=obj.order + 1
-                ).item_id
+                )
+                return {"item_id": item.item_id, "type": item.type.id}
             except Item.DoesNotExist:
-                return ""
+                return {"item_id": "", "type": 0}
 
 
 class CourseAnalyticsSerializer(serializers.ModelSerializer):

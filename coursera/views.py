@@ -1,10 +1,15 @@
 
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from coursera.models import ClickstreamEvent, Course, Item
-from coursera.serializers import CourseAnalyticsSerializer, VideoAnalyticsSerializer
+from coursera.serializers import (
+    CourseAnalyticsSerializer,
+    VideoAnalyticsListSerializer,
+    VideoAnalyticsSerializer,
+)
 
 
 class CourseAnalyticsViewSet(ReadOnlyModelViewSet):
@@ -32,6 +37,10 @@ class VideoAnalyticsViewSet(ReadOnlyModelViewSet):
     lookup_field = "item_id"
     lookup_url_kwarg = "item_id"
 
+    def list(self, request, course_id):
+        serializer = VideoAnalyticsListSerializer(self.get_queryset(), many=True)
+        return Response(serializer.data)
+
     def get_queryset(self):
         return (
             super()
@@ -41,5 +50,5 @@ class VideoAnalyticsViewSet(ReadOnlyModelViewSet):
                     self.request.user.courses.values_list("course_id", flat=True)
                 )
             )
-            .filter(branch=self.kwargs["course_id"])
+            .filter(branch=self.kwargs["course_id"], type=1)
         )
