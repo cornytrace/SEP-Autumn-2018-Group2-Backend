@@ -8,4 +8,10 @@ app_name = "courses-api"
 router = DefaultRouter()
 router.register("courses", CourseViewSet)
 router.register("actions", RegisteredActionViewSet)
-urlpatterns = router.urls
+urlpatterns = router.urls + [
+    path(
+        "actions/<slug:platform>/<slug:course_id>/",
+        RegisteredActionViewSet.as_view({"get": "list"}),
+        name="registeredaction-list",
+    )
+]

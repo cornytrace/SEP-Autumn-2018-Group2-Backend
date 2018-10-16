@@ -25,7 +25,13 @@ register(
 register(UserFactory, "_teacher", email="teacher@example.com", role=User.TEACHER)
 register(UserFactory, "qdt", email="qdt@example.com", role=User.QDT)
 register(CourseFactory)
-register(RegisteredActionFactory)
+register(RegisteredActionFactory, "_registered_action")
+
+
+@pytest.fixture
+def registered_action(teacher, _registered_action):
+    teacher.courses.add(_registered_action.course)
+    return _registered_action
 
 
 @pytest.fixture

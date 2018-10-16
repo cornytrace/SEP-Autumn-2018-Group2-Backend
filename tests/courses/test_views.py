@@ -7,7 +7,7 @@ def test_can_view_course(admin_api_client, course):
     response = admin_api_client.get(
         reverse("courses-api:course-detail", kwargs={"pk": course.pk})
     )
-    assert response.status_code == 200, "could not get course detail"
+    assert response.status_code == 200, str(response.content)
     assert response.data == {
         "pk": course.pk,
         "course_id": course.course_id,
@@ -18,13 +18,12 @@ def test_can_view_course(admin_api_client, course):
 
 @pytest.mark.django_db
 def test_can_view_registered_action(teacher, teacher_api_client, registered_action):
-    teacher.courses.add(registered_action.course)
     response = teacher_api_client.get(
         reverse(
             "courses-api:registeredaction-detail", kwargs={"pk": registered_action.pk}
         )
     )
-    assert response.status_code == 200, "could not get registered_action detail"
+    assert response.status_code == 200, str(response.content)
     assert response.data == {
         "course_id": registered_action.course_id,
         "date": "2017-07-16",
@@ -32,3 +31,14 @@ def test_can_view_registered_action(teacher, teacher_api_client, registered_acti
         "pk": registered_action.pk,
         "title": "Updated quiz 1",
     }, "view did not return correct data"
+
+
+@pytest.mark.django_db
+def test_can_filter_action_list(teacher, teacher_api_client, registered_action):
+    response = teacher_api_client.get(
+        reverse(
+            "courses-api:registeredaction-list",
+            kwargs={"platform": "coursera", "course_id": registered_action.course_id},
+        )
+    )
+    assert response.status_code == 200, str(response.content)

@@ -17,4 +17,7 @@ class RegisteredActionViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return super().get_queryset().filter(course__user=self.request.user)
+        queryset = super().get_queryset().filter(course__user=self.request.user)
+        if "course_id" in self.kwargs:
+            queryset = queryset.filter(course_id=self.kwargs["course_id"])
+        return queryset
