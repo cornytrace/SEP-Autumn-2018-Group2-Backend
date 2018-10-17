@@ -11,6 +11,15 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class RegisteredActionSerializer(serializers.ModelSerializer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["course"].queryset = Course.objects.filter(
+            user=self.context["request"].user
+        )
+
+    course = serializers.SlugRelatedField("course_id", queryset=Course.objects.all())
+
     class Meta:
         model = RegisteredAction
-        fields = ["pk", "course_id", "title", "date", "description"]
+        fields = ["pk", "course", "title", "date", "description"]

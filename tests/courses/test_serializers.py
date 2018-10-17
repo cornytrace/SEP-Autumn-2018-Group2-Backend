@@ -14,9 +14,16 @@ def test_can_serialize_course(course):
 
 
 @pytest.mark.django_db
-def test_can_serialize_registered_action(registered_action):
-    assert RegisteredActionSerializer(registered_action).data == {
-        "course_id": registered_action.course_id,
+def test_can_serialize_registered_action(teacher, registered_action):
+    class Request:
+        pass
+
+    obj = Request()
+    obj.user = teacher
+    assert RegisteredActionSerializer(
+        registered_action, context={"request": obj}
+    ).data == {
+        "course": registered_action.course_id,
         "date": "2017-07-16",
         "description": "Changed the second question in quiz 1 to make it clearer",
         "pk": registered_action.pk,

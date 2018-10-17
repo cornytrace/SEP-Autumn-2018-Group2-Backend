@@ -25,7 +25,7 @@ def test_can_view_registered_action(teacher, teacher_api_client, registered_acti
     )
     assert response.status_code == 200, str(response.content)
     assert response.data == {
-        "course_id": registered_action.course_id,
+        "course": registered_action.course_id,
         "date": "2017-07-16",
         "description": "Changed the second question in quiz 1 to make it clearer",
         "pk": registered_action.pk,
@@ -42,3 +42,29 @@ def test_can_filter_action_list(teacher, teacher_api_client, registered_action):
         )
     )
     assert response.status_code == 200, str(response.content)
+
+
+@pytest.mark.django_db
+def test_can_create_registered_action(teacher_api_client, teacher, course):
+    response = teacher_api_client.post(
+        reverse("courses-api:registeredaction-list"),
+        {
+            "course": course.course_id,
+            "date": "2017-09-20",
+            "title": "Title",
+            "description": "-",
+        },
+    )
+    assert response.status_code == 400, str(response.content)
+
+    teacher.courses.add(course)
+    response = teacher_api_client.post(
+        reverse("courses-api:registeredaction-list"),
+        {
+            "course": course.course_id,
+            "date": "2017-09-20",
+            "title": "Title",
+            "description": "-",
+        },
+    )
+    assert response.status_code == 201, str(response.content)
