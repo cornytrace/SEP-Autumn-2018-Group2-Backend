@@ -12,7 +12,7 @@ class CourseViewSet(ModelViewSet):
 
 
 class RegisteredActionViewSet(ModelViewSet):
-    queryset = RegisteredAction.objects.all()
+    queryset = RegisteredAction.objects.order_by("date")
     serializer_class = RegisteredActionSerializer
     permission_classes = [IsAuthenticated]
 
