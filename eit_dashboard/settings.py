@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+from urllib.parse import urlparse
 
 import dj_database_url
 
@@ -21,14 +22,12 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get(
-    "DJANGO_SECRET_KEY", "7jsd%1+=$8(#^==_x71tx%h%gest13t9-fggzbp2j*(x8%scz="
-)
+SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 
-FRONTEND_URL = os.environ.get("DASHIT_FRONTEND_URL", "http://localhost:8080/#/")
+FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:8080/#/")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = "DJANGO_DEBUG" in os.environ
 
 # Application definition
 
@@ -83,12 +82,7 @@ WSGI_APPLICATION = "eit_dashboard.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
-    }
-}
+DATABASES = {"default": dj_database_url.config()}
 
 AUTH_USER_MODEL = "users.User"
 
@@ -115,11 +109,11 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-# Change 'default' database configuration with $DATABASE_URL.
-DATABASES["default"].update(dj_database_url.config())
-
 # Allow all host headers
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "dashit.win.tue.nl"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+
+if "DJANGO_ALLOWED_HOSTS" in os.environ:
+    ALLOWED_HOSTS += os.environ["DJANGO_ALLOWED_HOSTS"].split(",")
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
@@ -132,7 +126,9 @@ MEDIA_ROOT = os.environ.get("DJANGO_MEDIA_ROOT")
 # Extra places for collectstatic to find static files.
 # STATICFILES_DIRS = [os.path.join(PROJECT_ROOT, "static")]
 
-CORS_ORIGIN_WHITELIST = ["localhost:8080", "cornytrace.github.io"]
+CORS_ORIGIN_WHITELIST = ["localhost:8080"]
+if "DJANGO_CORS_ORIGIN_WHITELIST" in os.environ:
+    CORS_ORIGIN_WHITELIST += os.environ["DJANGO_CORS_ORIGIN_WHITELIST"].split(",")
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
