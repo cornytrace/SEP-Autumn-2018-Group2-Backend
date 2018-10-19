@@ -37,7 +37,6 @@ class UserViewSet(ModelViewSet):
         return super().retrieve(request, pk)
 
     def get_permissions(self):
-        print(self.action)
         if self.action == "password_reset" or self.action == "forgot_password":
             return [AllowAny()]
         elif self.action == "list" or self.action == "retrieve" or self.action == "me":
