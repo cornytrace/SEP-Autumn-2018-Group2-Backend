@@ -14,6 +14,7 @@ def test_serialize_user(user):
         "email": "john.doe@example.com",
         "display_name": "John Doe",
         "role": User.TEACHER,
+        "organization": "",
         "courses": [],
     }
 

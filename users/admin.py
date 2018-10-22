@@ -7,7 +7,7 @@ from users.models import User
 
 class UserAdmin(BaseUserAdmin):
     fieldsets = (
-        (None, {"fields": ("email", "password", "role", "courses")}),
+        (None, {"fields": ("email", "password", "role", "organization", "courses")}),
         (_("Personal info"), {"fields": ("display_name",)}),
         (
             _("Permissions"),

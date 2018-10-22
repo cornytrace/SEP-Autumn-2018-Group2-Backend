@@ -9,7 +9,7 @@ from oauth2_provider.models import Application, Grant
 from courses.serializers import CourseSerializer
 from users.models import User
 
-USER_FIELDS = {"pk", "email", "display_name", "role", "courses"}
+USER_FIELDS = {"pk", "email", "display_name", "role", "organization", "courses"}
 
 
 @pytest.mark.django_db
@@ -72,6 +72,7 @@ def test_user_viewset_detail(admin_api_client, user):
         "email": "john.doe@example.com",
         "display_name": "John Doe",
         "role": User.TEACHER,
+        "organization": "",
         "courses": [],
     }, "response returned unexpected data"
 

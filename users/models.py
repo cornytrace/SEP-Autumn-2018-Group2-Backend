@@ -42,6 +42,7 @@ class User(AbstractUser):
     ROLES = ((TEACHER, "Teacher"), (QDT, "Quality & Design Team"), (ADMIN, "Admin"))
 
     role = models.CharField(max_length=10, choices=ROLES, blank=True)
+    organization = models.CharField(max_length=100, blank=True)
     courses = models.ManyToManyField("courses.Course")
 
     USERNAME_FIELD = "email"
