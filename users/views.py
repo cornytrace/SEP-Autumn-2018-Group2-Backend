@@ -74,7 +74,9 @@ class UserViewSet(ModelViewSet):
             )
             send_mail(
                 "Password Reset Request",
-                '<a href="' + link + '"> Click here to reset your password</a>',
+                '<html><body><a href="'
+                + link
+                + '"> Click here to reset your password</a></body></html>',
                 "noreply@" + request.get_host(),
                 [user.email],
             )
