@@ -37,5 +37,6 @@ allow_prereleases = true
 [scripts]
 server = "python manage.py runserver"
 migrate = "python manage.py migrate"
+collectstatic = "python manage.py collectstatic"
 token = "python manage.py shell -c \"from oauth2_provider.models import AccessToken; print(AccessToken.objects.filter(application__name='Coursera API').order_by('expires').last().token)\""
 client_id = "python manage.py shell -c \"from oauth2_provider.models import Application; print(Application.objects.get(name='DASH-IT Frontend').client_id)\""

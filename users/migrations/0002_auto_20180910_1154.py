@@ -11,6 +11,7 @@ def create_default_application(apps, schema_editor):
         authorization_grant_type="password",
         skip_authorization=True,
         name="DASH-IT Frontend",
+        client_id="n6BsBMOa8qPB66kWja2Zmi9SVRm6iuJZB2eywIoG",
         client_secret="",
     )
 
