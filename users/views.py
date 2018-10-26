@@ -67,7 +67,7 @@ class UserViewSet(ModelViewSet):
             token = default_token_generator.make_token(user)
             link = (
                 settings.FRONTEND_URL
-                + "resetpassword/"
+                + "pages/resetpassword/"
                 + str(token)
                 + "/"
                 + str(user.pk)
@@ -77,7 +77,7 @@ class UserViewSet(ModelViewSet):
                 '<html><body><a href="'
                 + link
                 + '"> Click here to reset your password</a></body></html>',
-                "noreply@" + request.get_host(),
+                settings.DEFAULT_FROM_EMAIL,
                 [user.email],
             )
         except User.DoesNotExist as e:

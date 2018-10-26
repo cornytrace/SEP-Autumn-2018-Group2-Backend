@@ -61,7 +61,7 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
         email_message = EmailMultiAlternatives(
-            subject, body, from_email="noreply@dashit.win.tue.nl", to=[user.email]
+            subject, body, from_email=settings.DEFAULT_FROM_EMAIL, to=[user.email]
         )
         email_message.send()
 
