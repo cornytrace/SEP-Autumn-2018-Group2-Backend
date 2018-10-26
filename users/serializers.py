@@ -47,7 +47,7 @@ class UserSerializer(serializers.ModelSerializer):
         domain = current_site.domain
         context = {
             "email": user.email,
-            "domain": domain,
+            "domain": settings.FRONTEND_URL,
             "site_name": site_name,
             "user": user,
             "token": default_token_generator.make_token(user),
@@ -59,7 +59,9 @@ class UserSerializer(serializers.ModelSerializer):
             "registration/password_reset_email.html", context
         )
 
-        email_message = EmailMultiAlternatives(subject, body, to=[user.email])
+        email_message = EmailMultiAlternatives(
+            subject, body, from_email="noreply@dashit.win.tue.nl", to=[user.email]
+        )
         email_message.send()
 
         return user
