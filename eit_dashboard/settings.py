@@ -26,8 +26,13 @@ SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:8080/#/")
 
+if not FRONTEND_URL.endswith("#/"):
+    FRONTEND_URL += "#/"
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = "DJANGO_DEBUG" in os.environ
+
+DEFAULT_FROM_EMAIL = "noreply@dashit.win.tue.nl"
 
 # Application definition
 
