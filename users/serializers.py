@@ -5,6 +5,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMultiAlternatives
 from django.db import transaction
 from django.template import loader
+from django.utils.html import strip_tags
 from rest_framework import serializers
 
 from courses.models import Course
