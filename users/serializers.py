@@ -56,13 +56,18 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
         subject = "An account has been created"
-        body = loader.render_to_string(
+        html_content = loader.render_to_string(
             "registration/password_reset_email.html", context
         )
+        text_content = strip_tags(html_content)
 
         email_message = EmailMultiAlternatives(
-            subject, body, from_email=settings.DEFAULT_FROM_EMAIL, to=[user.email]
+            subject,
+            text_content,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[user.email],
         )
+        email_message.attach_alternative(html_content, "text/html")
         email_message.send()
 
         return user
