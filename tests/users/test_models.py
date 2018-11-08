@@ -5,6 +5,9 @@ from users.models import User
 
 
 def test_email_is_username():
+    """
+    Test that the custom user model has 'email' set as the username field.
+    """
     assert User.USERNAME_FIELD == "email", "USERNAME_FIELD is not correct"
 
 

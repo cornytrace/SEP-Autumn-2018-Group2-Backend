@@ -4,6 +4,9 @@ from django.urls import reverse
 
 @pytest.mark.django_db
 def test_can_view_course(admin_api_client, course):
+    """
+    Test that an admin can see the course details.
+    """
     response = admin_api_client.get(
         reverse("courses-api:course-detail", kwargs={"pk": course.pk})
     )
@@ -18,6 +21,9 @@ def test_can_view_course(admin_api_client, course):
 
 @pytest.mark.django_db
 def test_can_view_registered_action(teacher, teacher_api_client, registered_action):
+    """
+    Test that a teacher can see the registered action details.
+    """
     response = teacher_api_client.get(
         reverse(
             "courses-api:registeredaction-detail", kwargs={"pk": registered_action.pk}
@@ -35,6 +41,9 @@ def test_can_view_registered_action(teacher, teacher_api_client, registered_acti
 
 @pytest.mark.django_db
 def test_can_filter_action_list(teacher, teacher_api_client, registered_action):
+    """
+    Test that a teacher can see a list of registered actions for a specific course.
+    """
     response = teacher_api_client.get(
         reverse(
             "courses-api:registeredaction-list",
@@ -46,6 +55,9 @@ def test_can_filter_action_list(teacher, teacher_api_client, registered_action):
 
 @pytest.mark.django_db
 def test_can_create_registered_action(teacher_api_client, teacher, course):
+    """
+    Test that a teacher can create a registered action.
+    """
     response = teacher_api_client.post(
         reverse("courses-api:registeredaction-list"),
         {

@@ -5,6 +5,9 @@ from courses.serializers import CourseSerializer, RegisteredActionSerializer
 
 @pytest.mark.django_db
 def test_can_serialize_course(course):
+    """
+    Test that a course is serialized correctly.
+    """
     assert CourseSerializer(course).data == {
         "pk": course.pk,
         "course_id": course.course_id,
@@ -15,6 +18,10 @@ def test_can_serialize_course(course):
 
 @pytest.mark.django_db
 def test_can_serialize_registered_action(teacher, registered_action):
+    """
+    Test that a registered action is serialized correctly.
+    """
+
     class Request:
         pass
 
